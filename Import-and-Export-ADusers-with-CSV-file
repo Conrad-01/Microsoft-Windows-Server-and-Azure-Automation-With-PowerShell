@@ -1,0 +1,11 @@
+Import-Module ActiveDirectory
+
+
+$users = Import-CSV user.csv
+ForEach ($u in $users) {
+	$path = "ou" + $u.Department + ",DC=Adatum,DC=com"
+	$upn = $u.UserID + "@adatum.com"
+	$display = $u.First + " " + $u.Last
+	Write-Host "Creating $display in $path"
+	New-ADUser -GiveName $u.First -Surname $u.Last -Name -DisplayName $display -SamAccountName $u.UserID -UserPrincipalName $UPN -Path $path -Department $u.Department
+}
