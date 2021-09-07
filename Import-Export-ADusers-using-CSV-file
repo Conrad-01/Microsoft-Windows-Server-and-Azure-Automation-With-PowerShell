@@ -9,3 +9,36 @@ ForEach ($u in $users) {
 	Write-Host "Creating $display in $path"
 	New-ADUser -GiveName $u.First -Surname $u.Last -Name -DisplayName $display -SamAccountName $u.UserID -UserPrincipalName $UPN -Path $path -Department $u.Department
 }
+
+Get-ADUser -Filter * -SearchBase "DC=Adatum,DC=com" -Properties * | Select-Object GivenName,Surname,Name,DisplayName,UserID Export-csv C:\users\administrator.adatum\desktop\1users.csv 
+
+
+
+
+
+$users = export-CSV user.csv
+foreach ($u in $users) {
+	
+
+$DNs = @(
+    "OU=Sales,OU=Users,OU=Company,DC=exoip,DC=local",
+    "OU=IT,OU=Users,OU=Company,DC=exoip,DC=local",
+    "OU=Finance,OU=Users,OU=Company,DC=exoip,DC=local"
+)
+
+$AllADUsers = @()
+
+foreach ($DN in $DNs) {
+    $Users = Get-ADUser -SearchBase $DN -Filter * -Properties * 
+
+ $AllADUsers += $Users
+}
+
+$AllADUsers | Sort-Object Name | Select-Object `
+@{Label = "First name"; Expression = { $_.GivenName } },
+@{Label = "Last name"; Expression = { $_.Surname } },
+@{Label = "Display name"; Expression = { $_.DisplayName } },
+@{Label = "User logon name"; Expression = { $_.SamAccountName } },
+@{Label = "User principal name"; Expression = { $_.UserPrincipalName } },
+@{Label = "Department"; Expression = { $_.Department } }
+Export-Csv -Encoding UTF8 -Path C:\users\administrator.adatum\desktop\1users.csv -NoTypeInformation #-Delimiter ";"
