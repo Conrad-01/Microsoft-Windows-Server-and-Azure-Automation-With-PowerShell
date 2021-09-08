@@ -1,6 +1,6 @@
 #Importing AD Users from CSV file
-Import-Module ActiveDirectory
 
+Import-Module ActiveDirectory
 
 $users = Import-CSV user.csv
 ForEach ($u in $users) {
@@ -12,4 +12,5 @@ ForEach ($u in $users) {
 }
 
 #Exporting AD Users into a CSV file
+
 Get-ADUser -Filter * -SearchBase "DC=Adatum,DC=com" -Properties * | Select-Object GivenName,Surname,DisplayName,Department| Export-csv C:\users\administrator.adatum\desktop\1users.csv
